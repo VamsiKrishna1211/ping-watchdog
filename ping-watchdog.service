@@ -1,0 +1,35 @@
+[Unit]
+Description=Ping Watchdog — reboots system when target IP becomes unreachable
+Documentation=https://github.com/your-repo/ping-watchdog
+# Start only after the network stack and online targets are ready
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+
+# --- path to your deployed project ---
+WorkingDirectory=/opt/ping-watchdog
+
+# uv run resolves the venv automatically inside WorkingDirectory
+ExecStart=/root/.local/bin/uv run python ping_watchdog.py
+
+# Override any of these to change behaviour without editing the script
+Environment=WATCHDOG_TARGET_IP=8.8.8.8
+Environment=WATCHDOG_PING_INTERVAL=5
+Environment=WATCHDOG_FAILURE_THRESHOLD=5
+Environment=WATCHDOG_PING_TIMEOUT=4
+Environment=WATCHDOG_LOG_FILE=/var/log/ping-watchdog.log
+
+# Restart the watchdog itself if it crashes (not on deliberate reboot exit)
+Restart=on-failure
+RestartSec=10s
+
+# Forward logs to the system journal (view with: journalctl -u ping-watchdog -f)
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=ping-watchdog
+
+[Install]
+WantedBy=multi-user.target

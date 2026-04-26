@@ -1,0 +1,9 @@
+[project]
+name = "ping-watchdog"
+version = "1.0.0"
+description = "Pings a target IP and reboots the system if it becomes unreachable"
+requires-python = ">=3.11"
+dependencies = []
+
+[tool.uv]
+python = "3.11"
